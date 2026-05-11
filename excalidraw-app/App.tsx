@@ -40,13 +40,8 @@ import { t } from "@excalidraw/excalidraw/i18n";
 
 import {
   GithubIcon,
-  XBrandIcon,
-  DiscordIcon,
-  ExcalLogo,
   usersIcon,
-  exportToPlus,
   share,
-  youtubeIcon,
 } from "@excalidraw/excalidraw/components/icons";
 import { isElementLink } from "@excalidraw/element";
 import {
@@ -90,7 +85,6 @@ import {
 } from "./app-jotai";
 import {
   FIREBASE_STORAGE_PREFIXES,
-  isExcalidrawPlusSignedUser,
   STORAGE_KEYS,
   SYNC_BROWSER_TABS_TIMEOUT,
 } from "./app_constants";
@@ -145,7 +139,6 @@ import { ExcalidrawPlusIframeExport } from "./ExcalidrawPlusIframeExport";
 
 import "./index.scss";
 
-import { ExcalidrawPlusPromoBanner } from "./components/ExcalidrawPlusPromoBanner";
 import { AppSidebar } from "./components/AppSidebar";
 
 import type { CollabAPI } from "./collab/Collab";
@@ -793,6 +786,26 @@ const ExcalidrawWrapper = () => {
     [setShareDialogState],
   );
 
+  const apply0xPacmanPreset = useCallback(() => {
+    if (!excalidrawAPI) {
+      return;
+    }
+    setAppTheme(THEME.DARK);
+    excalidrawAPI.updateScene({
+      appState: {
+        theme: THEME.DARK,
+        exportWithDarkMode: true,
+        gridModeEnabled: true,
+        viewBackgroundColor: "#080808",
+        currentItemStrokeColor: "#ffd700",
+        currentItemBackgroundColor: "#262005",
+      },
+    });
+    excalidrawAPI.setToast({
+      message: "0xPacman preset applied: dark + gold + branded canvas",
+    });
+  }, [excalidrawAPI, setAppTheme]);
+
   // ---------------------------------------------------------------------------
   // onExport — intercepts file save to wait for pending image loads
   // ---------------------------------------------------------------------------
@@ -862,45 +875,6 @@ const ExcalidrawWrapper = () => {
     );
   }
 
-  const ExcalidrawPlusCommand = {
-    label: "Excalidraw+",
-    category: DEFAULT_CATEGORIES.links,
-    predicate: true,
-    icon: <div style={{ width: 14 }}>{ExcalLogo}</div>,
-    keywords: ["plus", "cloud", "server"],
-    perform: () => {
-      window.open(
-        `${
-          import.meta.env.VITE_APP_PLUS_LP
-        }/plus?utm_source=excalidraw&utm_medium=app&utm_content=command_palette`,
-        "_blank",
-      );
-    },
-  };
-  const ExcalidrawPlusAppCommand = {
-    label: "Sign up",
-    category: DEFAULT_CATEGORIES.links,
-    predicate: true,
-    icon: <div style={{ width: 14 }}>{ExcalLogo}</div>,
-    keywords: [
-      "excalidraw",
-      "plus",
-      "cloud",
-      "server",
-      "signin",
-      "login",
-      "signup",
-    ],
-    perform: () => {
-      window.open(
-        `${
-          import.meta.env.VITE_APP_PLUS_APP
-        }?utm_source=excalidraw&utm_medium=app&utm_content=command_palette`,
-        "_blank",
-      );
-    },
-  };
-
   return (
     <div
       style={{ height: "100%" }}
@@ -959,12 +933,6 @@ const ExcalidrawWrapper = () => {
 
           return (
             <div className="excalidraw-ui-top-right">
-              {excalidrawAPI?.getEditorInterface().formFactor === "desktop" && (
-                <ExcalidrawPlusPromoBanner
-                  isSignedIn={isExcalidrawPlusSignedUser}
-                />
-              )}
-
               {collabError.message && <CollabError collabError={collabError} />}
               <LiveCollaborationTrigger
                 isCollaborating={isCollaborating}
@@ -990,6 +958,7 @@ const ExcalidrawWrapper = () => {
           theme={appTheme}
           setTheme={(theme) => setAppTheme(theme)}
           refresh={() => forceRefresh((prev) => !prev)}
+          onApply0xPacmanPreset={apply0xPacmanPreset}
         />
         <AppWelcomeScreen
           onCollabDialogOpen={onCollabDialogOpen}
@@ -1129,104 +1098,50 @@ const ExcalidrawWrapper = () => {
               },
             },
             {
+              label: "Apply 0xPacman Preset",
+              category: DEFAULT_CATEGORIES.app,
+              predicate: true,
+              keywords: ["gold", "black", "theme", "brand", "preset"],
+              perform: apply0xPacmanPreset,
+            },
+            {
               label: "GitHub",
               icon: GithubIcon,
               category: DEFAULT_CATEGORIES.links,
               predicate: true,
-              keywords: [
-                "issues",
-                "bugs",
-                "requests",
-                "report",
-                "features",
-                "social",
-                "community",
-              ],
+              keywords: ["0xpacman", "repository", "source", "fork", "code"],
               perform: () => {
                 window.open(
-                  "https://github.com/excalidraw/excalidraw",
+                  "https://github.com/0xPacman/excalidraw",
                   "_blank",
                   "noopener noreferrer",
                 );
               },
             },
             {
-              label: t("labels.followUs"),
-              icon: XBrandIcon,
+              label: "0xpacman.com",
               category: DEFAULT_CATEGORIES.links,
               predicate: true,
-              keywords: ["twitter", "contact", "social", "community"],
+              keywords: ["portfolio", "website", "contact", "about"],
               perform: () => {
                 window.open(
-                  "https://x.com/excalidraw",
+                  "https://0xpacman.com",
                   "_blank",
                   "noopener noreferrer",
                 );
               },
             },
             {
-              label: t("labels.discordChat"),
+              label: "draw.0xpacman.com",
               category: DEFAULT_CATEGORIES.links,
               predicate: true,
-              icon: DiscordIcon,
-              keywords: [
-                "chat",
-                "talk",
-                "contact",
-                "bugs",
-                "requests",
-                "report",
-                "feedback",
-                "suggestions",
-                "social",
-                "community",
-              ],
+              keywords: ["draw", "whiteboard", "live", "app", "domain"],
               perform: () => {
                 window.open(
-                  "https://discord.gg/UexuTaE",
+                  "https://draw.0xpacman.com",
                   "_blank",
                   "noopener noreferrer",
                 );
-              },
-            },
-            {
-              label: "YouTube",
-              icon: youtubeIcon,
-              category: DEFAULT_CATEGORIES.links,
-              predicate: true,
-              keywords: ["features", "tutorials", "howto", "help", "community"],
-              perform: () => {
-                window.open(
-                  "https://youtube.com/@excalidraw",
-                  "_blank",
-                  "noopener noreferrer",
-                );
-              },
-            },
-            ...(isExcalidrawPlusSignedUser
-              ? [
-                  {
-                    ...ExcalidrawPlusAppCommand,
-                    label: "Sign in / Go to Excalidraw+",
-                  },
-                ]
-              : [ExcalidrawPlusCommand, ExcalidrawPlusAppCommand]),
-
-            {
-              label: t("overwriteConfirm.action.excalidrawPlus.button"),
-              category: DEFAULT_CATEGORIES.export,
-              icon: exportToPlus,
-              predicate: true,
-              keywords: ["plus", "export", "save", "backup"],
-              perform: () => {
-                if (excalidrawAPI) {
-                  exportToExcalidrawPlus(
-                    excalidrawAPI.getSceneElements(),
-                    excalidrawAPI.getAppState(),
-                    excalidrawAPI.getFiles(),
-                    excalidrawAPI.getName(),
-                  );
-                }
               },
             },
             {
