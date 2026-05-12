@@ -1,0 +1,39 @@
+.excalidraw {
+  .AIWelcome {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+
+    &__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      border: 1px solid var(--dialog-border-color);
+      border-radius: var(--border-radius-md);
+      background: var(--color-surface-low);
+    }
+
+    &__text {
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      color: var(--text-primary-color);
+    }
+
+    &__warning {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.625rem;
+      margin-top: 0.5rem;
+      padding: 0.625rem 0.75rem;
+      border: 1px solid var(--color-warning);
+      border-radius: var(--border-radius-md);
+      background: color-mix(in srgb, var(--color-warning) 13%, transparent);
+      font-size: 0.8125rem;
+      line-height: 1.35;
+    }
+  }
+}

@@ -12,12 +12,12 @@ import { saveDebugState } from "./DebugCanvas";
 
 export const AppMainMenu: React.FC<{
   onCollabDialogOpen: () => any;
+  onOpenAISettings: () => void;
   isCollaborating: boolean;
   isCollabEnabled: boolean;
   theme: Theme | "system";
   setTheme: (theme: Theme | "system") => void;
   refresh: () => void;
-  onApply0xPacmanPreset: () => void;
 }> = React.memo((props) => {
   return (
     <MainMenu>
@@ -36,8 +36,8 @@ export const AppMainMenu: React.FC<{
       <MainMenu.DefaultItems.Help />
       <MainMenu.DefaultItems.ClearCanvas />
       <MainMenu.Separator />
-      <MainMenu.Item onSelect={props.onApply0xPacmanPreset}>
-        Apply 0xPacman Preset
+      <MainMenu.Item onSelect={props.onOpenAISettings}>
+        AI Settings
       </MainMenu.Item>
       <MainMenu.ItemLink href="https://draw.0xpacman.com" className="">
         draw.0xpacman.com

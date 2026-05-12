@@ -10,6 +10,7 @@ interface RateLimitInfo {
 interface StreamingOptions {
   url: string;
   messages: readonly LLMMessage[];
+  body?: Record<string, unknown>;
   onChunk?: (chunk: string) => void;
   extractRateLimits?: boolean;
   signal?: AbortSignal;
@@ -87,6 +88,7 @@ export async function TTDStreamFetch(
   const {
     url,
     messages,
+    body,
     onChunk,
     onStreamCreated,
     extractRateLimits = true,
@@ -104,7 +106,10 @@ export async function TTDStreamFetch(
         Accept: "text/event-stream",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ messages }),
+      body: JSON.stringify({
+        messages,
+        ...(body || {}),
+      }),
       signal,
     });
 

@@ -6,18 +6,65 @@ import {
   TTDDialog,
   TTDStreamFetch,
 } from "@excalidraw/excalidraw";
+import { FilledButton } from "@excalidraw/excalidraw/components/FilledButton";
 import { getDataURL } from "@excalidraw/excalidraw/data/blob";
 import { safelyParseJSON } from "@excalidraw/common";
 
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
+import { DEFAULT_OPENAI_MODEL } from "../data/AISettings";
 import { TTDIndexedDBAdapter } from "../data/TTDStorage";
+
+import "./AI.scss";
+
+import type { AISettings } from "../data/AISettings";
 
 export const AIComponents = ({
   excalidrawAPI,
+  aiSettings,
+  onOpenAISettings,
 }: {
   excalidrawAPI: ExcalidrawImperativeAPI;
+  aiSettings: AISettings;
+  onOpenAISettings: () => void;
 }) => {
+  const normalizedAIConfig = {
+    apiKey: aiSettings.apiKey.trim(),
+    model: aiSettings.model.trim() || DEFAULT_OPENAI_MODEL,
+  };
+
+  const customOpenAIConfig =
+    normalizedAIConfig.apiKey ||
+    normalizedAIConfig.model !== DEFAULT_OPENAI_MODEL
+      ? {
+          openaiApiKey: normalizedAIConfig.apiKey || undefined,
+          openaiModel: normalizedAIConfig.model,
+          apiKey: normalizedAIConfig.apiKey || undefined,
+          model: normalizedAIConfig.model,
+        }
+      : {};
+
+  const getAIErrorMessage = (error: unknown, fallback: string) => {
+    const message = `${
+      error instanceof Error ? error.message : fallback
+    }`.trim();
+    const normalized = message.toLowerCase();
+    const shouldSuggestSettings =
+      normalized.includes("api key") ||
+      normalized.includes("model") ||
+      normalized.includes("unauthorized") ||
+      normalized.includes("forbidden") ||
+      normalized.includes("invalid");
+
+    if (!shouldSuggestSettings) {
+      return message || fallback;
+    }
+
+    return `${
+      message || fallback
+    }\n\nCheck AI Settings in the main menu and verify your API key/model.`;
+  };
+
   return (
     <>
       <DiagramToCodePlugin
@@ -54,6 +101,7 @@ export const AIComponents = ({
                 texts: textFromFrameChildren,
                 image: dataURL,
                 theme: appState.theme,
+                ...customOpenAIConfig,
               }),
             },
           );
@@ -83,7 +131,9 @@ export const AIComponents = ({
               };
             }
 
-            throw new Error(errorJSON.message || text);
+            throw new Error(
+              getAIErrorMessage(errorJSON.message || text, "Generation failed"),
+            );
           }
 
           try {
@@ -96,12 +146,57 @@ export const AIComponents = ({
               html,
             };
           } catch (error: any) {
-            throw new Error("Generation failed (invalid response)");
+            throw new Error(
+              getAIErrorMessage(error, "Generation failed (invalid response)"),
+            );
           }
         }}
       />
 
       <TTDDialog
+        renderWelcomeScreen={() => (
+          <div className="AIWelcome">
+            <TTDDialog.WelcomeMessage />
+            <div className="AIWelcome__footer">
+              <div className="AIWelcome__text">
+                Optional: add your OpenAI API key and model for more reliable AI
+                generation.
+              </div>
+              <FilledButton
+                size="medium"
+                variant="outlined"
+                label="AI Settings"
+                onClick={onOpenAISettings}
+              />
+            </div>
+          </div>
+        )}
+        renderWarning={(message) => {
+          const content = `${message.content || ""} ${
+            message.error || ""
+          }`.toLowerCase();
+          const shouldSuggestSettings =
+            content.includes("api key") ||
+            content.includes("unauthorized") ||
+            content.includes("forbidden") ||
+            content.includes("model");
+
+          if (!shouldSuggestSettings) {
+            return undefined;
+          }
+
+          return (
+            <div className="AIWelcome__warning">
+              <div>AI request failed. Verify API key/model in AI Settings.</div>
+              <FilledButton
+                size="medium"
+                variant="outlined"
+                label="Open AI Settings"
+                onClick={onOpenAISettings}
+              />
+            </div>
+          );
+        }}
         onTextSubmit={async (props) => {
           const { onChunk, onStreamCreated, signal, messages } = props;
 
@@ -110,6 +205,7 @@ export const AIComponents = ({
               import.meta.env.VITE_APP_AI_BACKEND
             }/v1/ai/text-to-diagram/chat-streaming`,
             messages,
+            body: customOpenAIConfig,
             onChunk,
             onStreamCreated,
             extractRateLimits: true,

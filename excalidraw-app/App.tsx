@@ -94,6 +94,10 @@ import Collab, {
   isOfflineAtom,
 } from "./collab/Collab";
 import { AppFooter } from "./components/AppFooter";
+import {
+  AISettingsDialog,
+  aiSettingsDialogStateAtom,
+} from "./components/AISettingsDialog";
 import { AppMainMenu } from "./components/AppMainMenu";
 import { AppWelcomeScreen } from "./components/AppWelcomeScreen";
 import {
@@ -140,6 +144,7 @@ import { ExcalidrawPlusIframeExport } from "./ExcalidrawPlusIframeExport";
 import "./index.scss";
 
 import { AppSidebar } from "./components/AppSidebar";
+import { useAISettings } from "./data/AISettings";
 
 import type { CollabAPI } from "./collab/Collab";
 
@@ -398,7 +403,9 @@ const ExcalidrawWrapper = () => {
   }, []);
 
   const [, setShareDialogState] = useAtom(shareDialogStateAtom);
+  const [, setAISettingsDialogOpen] = useAtom(aiSettingsDialogStateAtom);
   const [collabAPI] = useAtom(collabAPIAtom);
+  const [aiSettings, setAISettings] = useAISettings();
   const [isCollaborating] = useAtomWithInitialValue(isCollaboratingAtom, () => {
     return isCollaborationLink(window.location.href);
   });
@@ -786,25 +793,10 @@ const ExcalidrawWrapper = () => {
     [setShareDialogState],
   );
 
-  const apply0xPacmanPreset = useCallback(() => {
-    if (!excalidrawAPI) {
-      return;
-    }
-    setAppTheme(THEME.DARK);
-    excalidrawAPI.updateScene({
-      appState: {
-        theme: THEME.DARK,
-        exportWithDarkMode: true,
-        gridModeEnabled: true,
-        viewBackgroundColor: "#080808",
-        currentItemStrokeColor: "#ffd700",
-        currentItemBackgroundColor: "#262005",
-      },
-    });
-    excalidrawAPI.setToast({
-      message: "0xPacman preset applied: dark + gold + branded canvas",
-    });
-  }, [excalidrawAPI, setAppTheme]);
+  const onOpenAISettings = useCallback(
+    () => setAISettingsDialogOpen(true),
+    [setAISettingsDialogOpen],
+  );
 
   // ---------------------------------------------------------------------------
   // onExport — intercepts file save to wait for pending image loads
@@ -953,12 +945,12 @@ const ExcalidrawWrapper = () => {
       >
         <AppMainMenu
           onCollabDialogOpen={onCollabDialogOpen}
+          onOpenAISettings={onOpenAISettings}
           isCollaborating={isCollaborating}
           isCollabEnabled={!isCollabDisabled}
           theme={appTheme}
           setTheme={(theme) => setAppTheme(theme)}
           refresh={() => forceRefresh((prev) => !prev)}
-          onApply0xPacmanPreset={apply0xPacmanPreset}
         />
         <AppWelcomeScreen
           onCollabDialogOpen={onCollabDialogOpen}
@@ -985,7 +977,13 @@ const ExcalidrawWrapper = () => {
           )}
         </OverwriteConfirmDialog>
         <AppFooter onChange={() => excalidrawAPI?.refresh()} />
-        {excalidrawAPI && <AIComponents excalidrawAPI={excalidrawAPI} />}
+        {excalidrawAPI && (
+          <AIComponents
+            excalidrawAPI={excalidrawAPI}
+            aiSettings={aiSettings}
+            onOpenAISettings={onOpenAISettings}
+          />
+        )}
 
         <TTDDialogTrigger />
         {isCollaborating && isOffline && (
@@ -1025,6 +1023,7 @@ const ExcalidrawWrapper = () => {
             }
           }}
         />
+        <AISettingsDialog settings={aiSettings} onSave={setAISettings} />
 
         <AppSidebar />
 
@@ -1098,11 +1097,19 @@ const ExcalidrawWrapper = () => {
               },
             },
             {
-              label: "Apply 0xPacman Preset",
+              label: "AI Settings",
               category: DEFAULT_CATEGORIES.app,
               predicate: true,
-              keywords: ["gold", "black", "theme", "brand", "preset"],
-              perform: apply0xPacmanPreset,
+              keywords: [
+                "ai",
+                "openai",
+                "chatgpt",
+                "api key",
+                "model",
+                "text to diagram",
+                "wireframe to code",
+              ],
+              perform: onOpenAISettings,
             },
             {
               label: "GitHub",
