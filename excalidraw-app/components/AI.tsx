@@ -107,8 +107,32 @@ export const AIComponents = ({
 
   const extractMermaidContent = (content: string): string => {
     const match = content.match(/```(?:mermaid)?\s*([\s\S]*?)```/i);
-    const mermaid = (match?.[1] || content).trim();
-    return mermaid;
+    const raw = (match?.[1] || content).trim();
+
+    const normalized = raw
+      .normalize("NFKC")
+      .replace(/[\u2010-\u2015]/g, "-")
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/[\u201C\u201D]/g, '"');
+
+    const sanitized = normalized
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      // style/class/link directives are a common source of parser failures
+      // in LLM output and are not required for structure.
+      .filter(
+        (line) =>
+          !/^(style|linkStyle|classDef|class)\s+/i.test(line) &&
+          line.length > 0,
+      )
+      .join("\n");
+
+    // Ensure the diagram starts with a supported flowchart header.
+    if (!/^(graph|flowchart)\s+/i.test(sanitized)) {
+      return `flowchart TD\n${sanitized}`;
+    }
+
+    return sanitized;
   };
 
   const buildDirectProviderMessages = ({
@@ -120,7 +144,7 @@ export const AIComponents = ({
   }) => {
     const systemMessage =
       purpose === "mermaid"
-        ? "You convert user requests into Mermaid flowchart syntax. Reply with Mermaid code only, no markdown fences and no extra text."
+        ? "You convert user requests into Mermaid flowchart syntax. Output must be parser-safe: ASCII-only, start with `flowchart TD` or `graph TD`, use simple node ids (A,B,C...), avoid `style`, `classDef`, `class`, `linkStyle`, avoid markdown fences, and output Mermaid code only."
         : "You generate a complete single-file HTML document from wireframe notes. Reply with HTML only, no markdown fences and no explanation.";
 
     return [
