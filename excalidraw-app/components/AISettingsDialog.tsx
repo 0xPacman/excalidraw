@@ -41,6 +41,11 @@ export const AISettingsDialog = ({
   }, [isOpen, settings.apiKey, settings.model]);
 
   const trimmedModel = useMemo(() => model.trim(), [model]);
+  const isCerebrasKey = apiKey.trim().startsWith("csk-");
+  const isLikelyOpenAIOnlyModel = useMemo(
+    () => /^(o\d|gpt-4|gpt-5|chatgpt)/i.test(trimmedModel),
+    [trimmedModel],
+  );
   const canSave = trimmedModel.length > 0;
 
   if (!isOpen) {
@@ -59,6 +64,11 @@ export const AISettingsDialog = ({
           Code. Supports OpenAI keys (`sk-...`) and Cerebras keys (`csk-...`).
           Saved locally in your browser.
         </p>
+        {isCerebrasKey && (
+          <p className="AISettingsDialog__note">
+            Cerebras key detected. Recommended model: `gpt-oss-120b`.
+          </p>
+        )}
 
         <TextField
           label="OpenAI API Key"
@@ -108,9 +118,13 @@ export const AISettingsDialog = ({
             label="Save"
             disabled={!canSave}
             onClick={() => {
+              const normalizedModel =
+                isCerebrasKey && isLikelyOpenAIOnlyModel
+                  ? "gpt-oss-120b"
+                  : trimmedModel;
               onSave({
                 apiKey: apiKey.trim(),
-                model: trimmedModel,
+                model: normalizedModel,
               });
               setIsOpen(false);
             }}

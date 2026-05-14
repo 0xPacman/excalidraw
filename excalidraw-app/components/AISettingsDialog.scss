@@ -13,6 +13,17 @@
       color: var(--text-primary-color);
     }
 
+    &__note {
+      margin: 0;
+      padding: 0.5rem 0.625rem;
+      border: 1px solid var(--color-warning);
+      border-radius: var(--border-radius-sm);
+      background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      color: var(--text-primary-color);
+    }
+
     &__presets {
       display: flex;
       flex-wrap: wrap;

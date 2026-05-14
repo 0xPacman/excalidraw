@@ -10,6 +10,7 @@ import { FilledButton } from "@excalidraw/excalidraw/components/FilledButton";
 import { getDataURL } from "@excalidraw/excalidraw/data/blob";
 import { RequestError } from "@excalidraw/excalidraw/errors";
 import { safelyParseJSON } from "@excalidraw/common";
+import { useEffect, useRef } from "react";
 
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
@@ -52,6 +53,36 @@ export const AIComponents = ({
         }
       : null
     : null;
+
+  const isLikelyOpenAIOnlyModel = (model: string) =>
+    /^(o\d|gpt-4|gpt-5|chatgpt)/i.test(model);
+
+  const providerModel =
+    directProviderConfig?.name === "cerebras" &&
+    isLikelyOpenAIOnlyModel(normalizedAIConfig.model)
+      ? "gpt-oss-120b"
+      : normalizedAIConfig.model;
+
+  const didShowAutoModelToastRef = useRef(false);
+
+  useEffect(() => {
+    if (
+      directProviderConfig?.name === "cerebras" &&
+      providerModel !== normalizedAIConfig.model &&
+      !didShowAutoModelToastRef.current
+    ) {
+      didShowAutoModelToastRef.current = true;
+      excalidrawAPI.setToast({
+        message:
+          "Cerebras key detected: switched AI model to gpt-oss-120b for compatibility.",
+      });
+    }
+  }, [
+    directProviderConfig?.name,
+    excalidrawAPI,
+    normalizedAIConfig.model,
+    providerModel,
+  ]);
 
   const parseRateLimit = (headers: Headers, name: string) => {
     const value = headers.get(name);
@@ -150,7 +181,7 @@ export const AIComponents = ({
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                model: normalizedAIConfig.model,
+                model: providerModel,
                 stream: false,
                 messages: buildDirectProviderMessages({
                   purpose: "html",
@@ -306,7 +337,7 @@ export const AIComponents = ({
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  model: normalizedAIConfig.model,
+                  model: providerModel,
                   stream: false,
                   messages: buildDirectProviderMessages({
                     purpose: "mermaid",
