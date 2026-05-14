@@ -9,7 +9,7 @@ export const AppWelcomeScreen: React.FC<{
   const { t } = useI18n();
   const headingContent = (
     <>
-      0xPacman Draw
+      Pacdraw
       <br />
       Collaborative whiteboard
       <br />

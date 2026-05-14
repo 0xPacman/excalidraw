@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>0xPacman Draw</title>
+    <title>Pacdraw</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no"
@@ -14,26 +14,26 @@
     <!-- Primary Meta Tags -->
     <meta
       name="title"
-      content="0xPacman Draw • Collaborative whiteboard for architecture and infrastructure"
+      content="Pacdraw • Collaborative whiteboard for architecture and infrastructure"
     />
     <meta
       name="description"
-      content="0xPacman Draw is a collaborative whiteboard with a gold-dark theme for architecture and infrastructure planning."
+      content="Pacdraw is a collaborative whiteboard with a gold-dark theme for architecture and infrastructure planning."
     />
     <meta name="image" content="https://draw.0xpacman.com/og-image-3.png" />
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:site_name" content="0xPacman Draw" />
+    <meta property="og:site_name" content="Pacdraw" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://draw.0xpacman.com" />
     <meta
       property="og:title"
-      content="0xPacman Draw — Collaborative whiteboarding for cloud teams"
+      content="Pacdraw — Collaborative whiteboarding for cloud teams"
     />
-    <meta property="og:image:alt" content="Excalidraw logo" />
+    <meta property="og:image:alt" content="Pacdraw logo" />
     <meta
       property="og:description"
-      content="0xPacman Draw helps teams sketch architecture, workflows, and system diagrams with live collaboration."
+      content="Pacdraw helps teams sketch architecture, workflows, and system diagrams with live collaboration."
     />
     <meta
       property="og:image"
@@ -46,11 +46,11 @@
     <meta property="twitter:url" content="https://draw.0xpacman.com" />
     <meta
       property="twitter:title"
-      content="0xPacman Draw — Collaborative whiteboarding for cloud teams"
+      content="Pacdraw — Collaborative whiteboarding for cloud teams"
     />
     <meta
       property="twitter:description"
-      content="0xPacman Draw helps teams sketch architecture, workflows, and system diagrams with live collaboration."
+      content="Pacdraw helps teams sketch architecture, workflows, and system diagrams with live collaboration."
     />
     <meta
       property="twitter:image"
@@ -102,7 +102,7 @@
     <!------------------------------------------------------------------------->
     <% if (typeof PROD != 'undefined' && PROD == true) { %>
     <script>
-      // Redirect Excalidraw+ users which have auto-redirect enabled.
+      // Redirect legacy plus users which have auto-redirect enabled.
       //
       // Redirect only the bare root path, so link/room/library urls are not
       // redirected.
@@ -116,7 +116,7 @@
         // if its present redirect
         document.cookie.includes("excplus-autoredirect=true")
       ) {
-        window.location.href = "https://app.excalidraw.com";
+        window.location.href = "https://draw.0xpacman.com";
       }
     </script>
 
@@ -136,11 +136,10 @@
     </script>
     <% } %>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.svg" />
 
-    <!-- Excalidraw version -->
+    <!-- Pacdraw version -->
     <meta name="version" content="{version}" />
 
     <% if (typeof VITE_APP_DEV_DISABLE_LIVE_RELOAD != 'undefined' &&
@@ -162,7 +161,7 @@
     <% } %>
     <script>
       // setting this so that libraries installation reuses this window tab.
-      window.name = "_excalidraw";
+      window.name = "_pacdraw";
     </script>
 
     <!-- FIXME: remove this when we update CRA (fix SW caching) -->
@@ -213,7 +212,7 @@
   <body>
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <header>
-      <h1 class="visually-hidden">0xPacman Draw</h1>
+      <h1 class="visually-hidden">Pacdraw</h1>
     </header>
     <div id="root"></div>
     <script type="module" src="index.tsx"></script>
