@@ -13,6 +13,7 @@ import type { AISettings } from "../data/AISettings";
 export const aiSettingsDialogStateAtom = atom(false);
 
 const MODEL_PRESETS = [
+  "gpt-oss-120b",
   "gpt-4.1-mini",
   "gpt-4.1",
   "gpt-4o",
@@ -55,7 +56,8 @@ export const AISettingsDialog = ({
       <div className="AISettingsDialog">
         <p className="AISettingsDialog__description">
           Configure API credentials used by Text to Diagram and Wireframe to
-          Code. Saved locally in your browser.
+          Code. Supports OpenAI keys (`sk-...`) and Cerebras keys (`csk-...`).
+          Saved locally in your browser.
         </p>
 
         <TextField
