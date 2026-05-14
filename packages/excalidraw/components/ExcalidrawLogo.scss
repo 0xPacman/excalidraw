@@ -33,6 +33,17 @@
       color: var(--color-logo-text);
     }
 
+    .ExcalidrawLogo-wordmark {
+      margin-left: 0.75rem;
+      color: var(--color-logo-text);
+      font-family: "Virgil", "Assistant", sans-serif;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
     &.is-mobile {
       .ExcalidrawLogo-icon {
         height: var(--logo-icon--mobile);
@@ -40,6 +51,11 @@
 
       .ExcalidrawLogo-text {
         height: var(--logo-text--mobile);
+        margin-left: 0.5rem;
+      }
+
+      .ExcalidrawLogo-wordmark {
+        font-size: var(--logo-text--mobile);
         margin-left: 0.5rem;
       }
     }
@@ -52,6 +68,10 @@
       .ExcalidrawLogo-text {
         height: var(--logo-text--xs);
       }
+
+      .ExcalidrawLogo-wordmark {
+        font-size: var(--logo-text--xs);
+      }
     }
 
     &.is-small {
@@ -61,6 +81,10 @@
 
       .ExcalidrawLogo-text {
         height: var(--logo-text--small);
+      }
+
+      .ExcalidrawLogo-wordmark {
+        font-size: var(--logo-text--small);
       }
     }
 
@@ -72,6 +96,10 @@
       .ExcalidrawLogo-text {
         height: var(--logo-text--normal);
       }
+
+      .ExcalidrawLogo-wordmark {
+        font-size: var(--logo-text--normal);
+      }
     }
 
     &.is-large {
@@ -81,6 +109,10 @@
 
       .ExcalidrawLogo-text {
         height: var(--logo-text--large);
+      }
+
+      .ExcalidrawLogo-wordmark {
+        font-size: var(--logo-text--large);
       }
     }
   }

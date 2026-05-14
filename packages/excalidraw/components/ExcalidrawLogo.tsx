@@ -46,6 +46,7 @@ type LogoSize = "xs" | "small" | "normal" | "large" | "custom" | "mobile";
 interface LogoProps {
   size?: LogoSize;
   withText?: boolean;
+  text?: string;
   style?: React.CSSProperties;
   /**
    * If true, the logo will not be wrapped in a Link component.
@@ -59,11 +60,17 @@ export const ExcalidrawLogo = ({
   style,
   size = "small",
   withText,
+  text,
 }: LogoProps) => {
   return (
     <div className={`ExcalidrawLogo is-${size}`} style={style}>
       <LogoIcon />
-      {withText && <LogoText />}
+      {withText &&
+        (text ? (
+          <div className="ExcalidrawLogo-wordmark">{text}</div>
+        ) : (
+          <LogoText />
+        ))}
     </div>
   );
 };
