@@ -23,7 +23,7 @@ export const AppFooter = React.memo(
             target="_blank"
             rel="noreferrer"
           >
-            Pacdraw
+            0xpacman
           </a>
         </div>
       </Footer>
